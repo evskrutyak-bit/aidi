@@ -1,0 +1,451 @@
+<!-- Chosen Palette: Premium Botanical (Sage Green, Earthy Brown, Slate Gray, Bone White) -->
+<!-- Application Structure Plan:
+    1. Dashboard: Macro view of the Russian market (2024-2030) using Grand View Research data.
+    2. Pricing Engine: Dynamic comparison of unit prices (RUB/100ml) for the research findings.
+    3. Competitor Intelligence: Filterable database of 20+ competitors mapped in R2.
+    4. Marketing & CX Playbook: Visual synthesis of the strategies found in the doc.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ рынка масел холодного отжима 2024-2030</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            --primary: #4A5D23;
+            --secondary: #8A9A5B;
+            --accent: #A0522D;
+            --bg: #F9F8F4;
+            --card: #FFFFFF;
+            --text: #2D3748;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
+
+        .tab-active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(74, 93, 35, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-[#4A5D23] rounded-lg flex items-center justify-center text-white font-bold text-xl">B</div>
+                    <div>
+                        <h1 class="text-xl serif font-bold leading-tight">Бродский Аналитика</h1>
+                        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Market Research Analysis 2024-2030</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6 text-sm font-medium" id="mainNav">
+                    <button onclick="showSection('market', this)" class="nav-link tab-active py-7">Рынок</button>
+                    <button onclick="showSection('pricing', this)" class="nav-link py-7">Цены & SKU</button>
+                    <button onclick="showSection('competitors', this)" class="nav-link py-7">Конкуренты</button>
+                    <button onclick="showSection('marketing', this)" class="nav-link py-7">Маркетинг & CX</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- SECTION 1: MARKET DYNAMICS -->
+        <section id="section-market" class="animate-fade">
+            <div class="mb-8">
+                <h2 class="text-3xl serif mb-2">Глобальный и локальный контекст</h2>
+                <p class="text-gray-600 max-w-3xl italic">"Переход от нишевого потребления к структурному расширению. К 2030 году рынок РФ достигнет $1 136,5 млн."</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2">📈 Прогноз выручки (РФ, млн USD)</h3>
+                    <div class="chart-container">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-[#4A5D23] text-white p-6 rounded-2xl">
+                        <div class="text-sm opacity-80 uppercase font-bold tracking-wider">CAGR (2025-2030)</div>
+                        <div class="text-4xl font-bold mt-1">4.7%</div>
+                        <p class="text-xs mt-4 leading-relaxed">В 2024 году рынок уже сгенерировал $862,1 млн, что составляет 2,8% мирового потребления.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-sm uppercase text-gray-500 mb-3 tracking-widest text-center">Драйверы роста</h4>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start gap-2">
+                                <span class="text-[#4A5D23]">●</span>
+                                <span>Тренд <strong>"Clean Label"</strong> (Чистая этикетка)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-[#4A5D23]">●</span>
+                                <span>Отказ от ультра-обработанных продуктов</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-[#4A5D23]">●</span>
+                                <span>Рост доли в масс-категориях (Рапс - 14%)</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl serif mb-6">R1. Стратегические сегменты</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+                <div class="bg-white p-5 rounded-xl border border-gray-200 card-hover">
+                    <h4 class="font-bold text-[#4A5D23] mb-2 uppercase text-[11px]">Прямые (D2C)</h4>
+                    <p class="text-[11px] text-gray-500">Trawa, Радость Здоровья. "Дубовый пресс", ручной труд. Аутентичность.</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 card-hover">
+                    <h4 class="font-bold text-[#4A5D23] mb-2 uppercase text-[11px]">Смежные</h4>
+                    <p class="text-[11px] text-gray-500">Масляный Король, Dial-Export. Федеральные сети, ISO, объем.</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 card-hover">
+                    <h4 class="font-bold text-[#4A5D23] mb-2 uppercase text-[11px]">Инновации</h4>
+                    <p class="text-[11px] text-gray-500">Altaria. Спреи, вакуумная упаковка, эстетика кухни.</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 card-hover">
+                    <h4 class="font-bold text-gray-400 mb-2 uppercase text-[11px]">Заменители</h4>
+                    <p class="text-[11px] text-gray-500">Ufeelgood. Капсулы Омега-3, порошки суперфудов. БАДы.</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 card-hover">
+                    <h4 class="font-bold text-gray-400 mb-2 uppercase text-[11px]">Локальные</h4>
+                    <p class="text-[11px] text-gray-500">Рынки Москвы. Личное доверие продавцу, дегустация.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PRICING ENGINE -->
+        <section id="section-pricing" class="hidden animate-fade">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl serif mb-2">R3. Продукты и Цены</h2>
+                    <p class="text-gray-600">Сравнение удельной стоимости (₽ / 100 мл) на февраль 2026</p>
+                </div>
+                <div class="w-full md:w-64">
+                    <select id="oilSelector" onchange="updatePricingChart()" class="w-full bg-white border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#4A5D23] outline-none shadow-sm">
+                        <option value="Черный тмин">Черный тмин</option>
+                        <option value="Кедровое">Кедровое</option>
+                        <option value="Тыквенное">Тыквенное</option>
+                        <option value="Конопляное">Конопляное</option>
+                        <option value="Льняное">Льняное</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-10">
+                <div class="chart-container">
+                    <canvas id="pricingChart"></canvas>
+                </div>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-4 bg-gray-50 rounded-xl">
+                        <div class="text-xs text-gray-400 uppercase font-bold">Самый дорогой SKU</div>
+                        <div id="maxPriceLabel" class="text-xl font-bold text-[#A0522D] mt-1">-</div>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl">
+                        <div class="text-xs text-gray-400 uppercase font-bold">Средняя цена</div>
+                        <div id="avgPriceLabel" class="text-xl font-bold text-gray-800 mt-1">-</div>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl flex items-center justify-center">
+                        <div class="text-[11px] font-medium text-[#4A5D23]">"Малая фасовка (100 мл) имеет самую высокую удельную цену."</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scroll">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 uppercase text-[10px] tracking-widest">
+                            <th class="p-4 rounded-tl-xl">Конкурент</th>
+                            <th class="p-4">Формат</th>
+                            <th class="p-4">Объем</th>
+                            <th class="p-4">Цена ₽</th>
+                            <th class="p-4">₽/100 мл</th>
+                            <th class="p-4 rounded-tr-xl">Заявление</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pricingTableBody" class="bg-white"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECTION 3: COMPETITORS -->
+        <section id="section-competitors" class="hidden animate-fade">
+            <div class="mb-8">
+                <h2 class="text-3xl serif mb-2">R2. Каталог Конкурентов</h2>
+                <div class="flex flex-wrap gap-2 mt-4" id="filterButtons">
+                    <button onclick="filterComp('Все', this)" class="comp-filter text-xs font-bold px-4 py-2 bg-gray-200 rounded-full">Все (20+)</button>
+                    <button onclick="filterComp('Прямой', this)" class="comp-filter text-xs font-bold px-4 py-2 bg-white border border-gray-200 rounded-full">Прямые</button>
+                    <button onclick="filterComp('Смежный', this)" class="comp-filter text-xs font-bold px-4 py-2 bg-white border border-gray-200 rounded-full">Смежные</button>
+                    <button onclick="filterComp('Инновационный', this)" class="comp-filter text-xs font-bold px-4 py-2 bg-white border border-gray-200 rounded-full">Инновации</button>
+                </div>
+            </div>
+            <div id="competitorGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- SECTION 4: MARKETING & CX -->
+        <section id="section-marketing" class="hidden animate-fade">
+            <h2 class="text-3xl serif mb-8">R4-R6. Маркетинг и Сервис</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <div>
+                    <h3 class="font-bold text-xl mb-6">🔗 Анализ воронок</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-5 rounded-xl border border-gray-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-[#4A5D23]">Altaria</span>
+                                <span class="text-[10px] bg-green-100 text-[#4A5D23] px-2 py-0.5 rounded uppercase font-bold">Блогеры</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Reels (охват) → Ozon → Покупка набора → Отзыв в соцсетях за бонус.</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-[#4A5D23]">Trawa</span>
+                                <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded uppercase font-bold">Контент</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Статья в медиа → Квиз «Подбери масло» → Рассылка → Лояльность.</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-[#4A5D23]">Радость Здоровья</span>
+                                <span class="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded uppercase font-bold">Личный бренд</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Reels владельца → WhatsApp-чат → Консультация → Продажа.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <h3 class="font-bold text-xl mb-6">Сервисные фичи (Wow)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 bg-[#F9F8F4] rounded-xl text-center">
+                            <div class="font-bold text-sm mb-1 uppercase tracking-tighter">Trawa</div>
+                            <p class="text-[10px] text-gray-500">Дизайнерский тубус + именная открытка от мастера.</p>
+                        </div>
+                        <div class="p-4 bg-[#F9F8F4] rounded-xl text-center">
+                            <div class="font-bold text-sm mb-1 uppercase tracking-tighter">Altaria</div>
+                            <p class="text-[10px] text-gray-500">3 режима распыления, вакуумная защита без воздуха.</p>
+                        </div>
+                        <div class="p-4 bg-[#F9F8F4] rounded-xl text-center">
+                            <div class="font-bold text-sm mb-1 uppercase tracking-tighter">Bio-Hutor</div>
+                            <p class="text-[10px] text-gray-500">Эко-туризм: возможность самому нажать кнопку пресса.</p>
+                        </div>
+                        <div class="p-4 bg-[#F9F8F4] rounded-xl text-center">
+                            <div class="font-bold text-sm mb-1 uppercase tracking-tighter">Радость Здоровья</div>
+                            <p class="text-[10px] text-gray-500">Подписка: автоматическая доставка каждые 2 недели.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-[#2D3748] text-white p-8 rounded-3xl">
+                <h3 class="text-2xl serif mb-6 text-center">R7. Архетипы Визуала</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div>
+                        <div class="text-[#8A9A5B] font-bold text-xs uppercase mb-2">Modern Lifestyle</div>
+                        <p class="text-[10px] opacity-70">Яркие градиенты, алюминий, "фуд-порн" фото (Altaria).</p>
+                    </div>
+                    <div>
+                        <div class="text-[#8A9A5B] font-bold text-xs uppercase mb-2">Artisanal Craft</div>
+                        <p class="text-[10px] opacity-70">Темное стекло, крафт-бумага, матовость (Trawa).</p>
+                    </div>
+                    <div>
+                        <div class="text-[#8A9A5B] font-bold text-xs uppercase mb-2">Pharma/Scientific</div>
+                        <p class="text-[10px] opacity-70">Инфографика тела, синие тона, доказательства (Пазл Здоровья).</p>
+                    </div>
+                    <div>
+                        <div class="text-[#8A9A5B] font-bold text-xs uppercase mb-2">Traditional Eco</div>
+                        <p class="text-[10px] opacity-70">Белый/зеленый цвета, орнаменты (Компас Здоровья).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-[10px] text-gray-400">
+            Данные актуальны на февраль 2026 | ИП Бродский К.Л. | Источники: Grand View Research, Роскачество
+        </div>
+    </footer>
+
+    <script>
+        const marketData = {
+            years: [2024, 2025, 2026, 2027, 2028, 2029, 2030],
+            revenue: [862.1, 902.6, 945.0, 989.4, 1035.9, 1084.6, 1136.5]
+        };
+
+        const compData = [
+            { name: "Altaria", type: "Инновационный", geo: "Барнаул", channels: "Ozon, WB, Золотое Яблоко", pos: "Эко-масло в спрее: эстетика и польза" },
+            { name: "Trawa", type: "Прямой", geo: "Москва", channels: "Сайт, Ozon, WB, соцсети", pos: "Сыродавленное масло из-под дубового пресса" },
+            { name: "Масляный Король", type: "Смежный", geo: "В. Новгород", channels: "Маркетплейсы, ритейл", pos: "Традиции качества с 2002 года" },
+            { name: "Dial-Export", type: "Смежный", geo: "Москва", channels: "Globus, Перекресток", pos: "Эксперт в области растительных масел" },
+            { name: "Компас Здоровья", type: "Смежный", geo: "Новосибирск", channels: "Собственная сеть, Ozon", pos: "Сила сибирского льна" },
+            { name: "Радость Здоровья", type: "Прямой", geo: "Москва", channels: "Сайт, рынки", pos: "Живые продукты в день заказа" },
+            { name: "Ufeelgood", type: "Заменитель", geo: "Москва", channels: "Азбука Вкуса", pos: "Органические суперфуды мира" },
+            { name: "Коноплянка", type: "Прямой", geo: "РФ", channels: "Маркетплейсы", pos: "Возрождение традиций коноплеводства" },
+            { name: "Bio-Hutor", type: "Прямой", geo: "Ростов", channels: "Эко-магазины", pos: "Первое органическое хозяйство" },
+            { name: "Nadawilli", type: "Смежный", geo: "РФ", channels: "Ozon, WB", pos: "Натуральное качество по честной цене" },
+            { name: "Сила Кедра", type: "Прямой", geo: "Сибирь", channels: "Сайт", pos: "Энергия дикоросов" },
+            { name: "Азбука Вкуса", type: "Прямой", geo: "Мск", channels: "Ритейл", pos: "Выбор экспертов сети" }
+        ];
+
+        const pricingData = [
+            { comp: "Радость Здоровья", oil: "Черный тмин", fmt: "Стекло", vol: "250 мл", prc: 900, unt: 360, clm: "Первый холодный отжим" },
+            { comp: "Dial-Export", oil: "Черный тмин", fmt: "Стекло", vol: "250 мл", prc: 1050, unt: 420, clm: "Нерафинированное" },
+            { comp: "Масляный Король", oil: "Черный тмин", fmt: "Стекло", vol: "100 мл", prc: 594, unt: 594, clm: "Тимохинон" },
+            { comp: "Altaria", oil: "Кедровое", fmt: "Спрей", vol: "250 мл", prc: 949, unt: 379.6, clm: "Вакуумная упаковка" },
+            { comp: "Масляный Король", oil: "Кедровое", fmt: "Стекло", vol: "100 мл", prc: 872, unt: 872, clm: "100% натуральное" },
+            { comp: "Trawa", oil: "Льняное", fmt: "Стекло", vol: "250 мл", prc: 664, unt: 265.6, clm: "Без окисления" },
+            { comp: "Компас Здоровья", oil: "Льняное", fmt: "ПЭТ", vol: "500 мл", prc: 394, unt: 78.8, clm: "Источник Омега-3" },
+            { comp: "Altaria", oil: "Тыквенное", fmt: "Спрей", vol: "250 мл", prc: 1127, unt: 450.8, clm: "3 режима распыления" },
+            { comp: "Dial-Export", oil: "Тыквенное", fmt: "Стекло", vol: "250 мл", prc: 761, unt: 304.4, clm: "Темное стекло" },
+            { comp: "Радость Здоровья", oil: "Конопляное", fmt: "Стекло", vol: "250 мл", prc: 750, unt: 300, clm: "Баланс Омега-3/6" },
+            { comp: "Масляный Король", oil: "Конопляное", fmt: "Стекло", vol: "100 мл", prc: 375, unt: 375, clm: "Иммунитет" }
+        ];
+
+        let priceChartInstance = null;
+
+        function showSection(id, btn) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('section-' + id).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('tab-active'));
+            if(btn) btn.classList.add('tab-active');
+            if(id === 'pricing') updatePricingChart();
+        }
+
+        function initMarketChart() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: marketData.years,
+                    datasets: [{
+                        label: 'Доход $ млн',
+                        data: marketData.revenue,
+                        borderColor: '#4A5D23',
+                        backgroundColor: 'rgba(74, 93, 35, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: false }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function updatePricingChart() {
+            const selectedOil = document.getElementById('oilSelector').value;
+            const filtered = pricingData.filter(d => d.oil === selectedOil);
+            const ctx = document.getElementById('pricingChart').getContext('2d');
+            
+            if (priceChartInstance) priceChartInstance.destroy();
+            
+            priceChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: filtered.map(d => d.comp),
+                    datasets: [{
+                        data: filtered.map(d => d.unt),
+                        backgroundColor: '#8A9A5B',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { title: { display: true, text: '₽ / 100 мл' } } }
+                }
+            });
+
+            const unts = filtered.map(d => d.unt);
+            document.getElementById('maxPriceLabel').innerText = Math.max(...unts) + ' ₽';
+            document.getElementById('avgPriceLabel').innerText = Math.round(unts.reduce((a,b)=>a+b,0)/unts.length) + ' ₽';
+            document.getElementById('pricingTableBody').innerHTML = filtered.map(d => `
+                <tr class="border-b border-gray-100">
+                    <td class="p-4 font-bold">${d.comp}</td>
+                    <td class="p-4">${d.fmt}</td>
+                    <td class="p-4">${d.vol}</td>
+                    <td class="p-4">${d.prc} ₽</td>
+                    <td class="p-4 font-bold text-[#A0522D]">${d.unt} ₽</td>
+                    <td class="p-4 text-[10px] text-gray-500">${d.clm}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filterComp(type, btn) {
+            const grid = document.getElementById('competitorGrid');
+            const filtered = type === 'Все' ? compData : compData.filter(c => c.type === type);
+            if(btn) {
+                document.querySelectorAll('.comp-filter').forEach(b => {
+                    b.classList.remove('bg-gray-200');
+                    b.classList.add('bg-white', 'border-gray-200');
+                });
+                btn.classList.remove('bg-white', 'border-gray-200');
+                btn.classList.add('bg-gray-200');
+            }
+            grid.innerHTML = filtered.map(c => `
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm card-hover flex flex-col h-full animate-fade">
+                    <div class="text-[10px] font-bold text-white bg-[#4A5D23] px-2 py-0.5 rounded-full inline-block mb-3 self-start font-bold uppercase">${c.type}</div>
+                    <h4 class="text-xl serif font-bold mb-2">${c.name}</h4>
+                    <p class="text-xs text-gray-500 mb-4 flex-grow italic">"${c.pos}"</p>
+                    <div class="text-[10px] text-gray-400 mt-4 border-t pt-4">📍 ${c.geo} | 🛒 ${c.channels}</div>
+                </div>
+            `).join('');
+        }
+
+        window.onload = () => {
+            initMarketChart();
+            filterComp('Все', document.querySelector('.comp-filter'));
+        };
+    </script>
+</body>
+</html>
